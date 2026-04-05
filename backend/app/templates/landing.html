@@ -1,26 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Crystal Presentes — Brinquedos para todos os momentos{% endblock %}
 
-{% block body_style %}background-color:#fdf6f8;background-image:repeating-linear-gradient(45deg,transparent 0px,transparent 24px,rgba(232,114,138,0.15) 24px,rgba(232,114,138,0.15) 48px),repeating-linear-gradient(-45deg,transparent 0px,transparent 24px,rgba(232,114,138,0.15) 24px,rgba(232,114,138,0.15) 48px);background-attachment:fixed{% endblock %}
-
 {% block head %}
 <style>
   [x-cloak] { display: none !important; }
-
-  .section-white { background-color: rgba(255,255,255,0.85); }
-
+  .section-white { background-color: #ffffff; }
   .hero-gradient { background: linear-gradient(135deg, #fdf6f8 0%, #fff0f4 60%, #fde8ef 100%); }
 </style>
 {% endblock %}
 
 {% block body %}
-<!-- Overlay diagonal fixo — mix-blend-mode garante visibilidade sobre qualquer fundo -->
-<div style="position:fixed;inset:0;z-index:9999;pointer-events:none;
-  background-image:
-    repeating-linear-gradient(45deg,transparent 0px,transparent 24px,rgba(210,80,110,0.09) 24px,rgba(210,80,110,0.09) 48px),
-    repeating-linear-gradient(-45deg,transparent 0px,transparent 24px,rgba(210,80,110,0.09) 24px,rgba(210,80,110,0.09) 48px);
-  mix-blend-mode:multiply;">
-</div>
 <div class="min-h-screen">
 
 <!-- NAVBAR -->
