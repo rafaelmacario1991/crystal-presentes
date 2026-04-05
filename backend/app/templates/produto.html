@@ -141,8 +141,12 @@
       <!-- CTAs -->
       <div class="space-y-3 pt-2">
         {% if product.availability == 'disponivel' %}
-        <button type="button" x-data
-                @click="$store.cart.add('{{ product.id }}', {{ product.name|tojson }}, {{ product.retail_price }}, '{{ product.photos[0] if product.photos else '' }}')"
+        <button type="button"
+                onclick="addToCart(this)"
+                data-id="{{ product.id }}"
+                data-name="{{ product.name }}"
+                data-price="{{ product.retail_price }}"
+                data-photo="{{ product.photos[0] if product.photos else '' }}"
                 class="flex items-center justify-center gap-2 w-full py-3.5 bg-crystal-primary hover:bg-crystal-hover
                        text-white font-bold rounded-2xl transition-colors shadow-md shadow-crystal-primary/25">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

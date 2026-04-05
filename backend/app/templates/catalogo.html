@@ -279,8 +279,12 @@
                 <p class="font-bold text-crystal-primary text-base">
                   R$ {{ "%.2f"|format(p.retail_price)|replace('.', ',') }}
                 </p>
-                <button type="button" x-data
-                        @click.stop="$store.cart.add('{{ p.id }}', {{ p.name|tojson }}, {{ p.retail_price }}, '{{ p.photos[0] if p.photos else '' }}')"
+                <button type="button"
+                        onclick="event.preventDefault(); addToCart(this)"
+                        data-id="{{ p.id }}"
+                        data-name="{{ p.name }}"
+                        data-price="{{ p.retail_price }}"
+                        data-photo="{{ p.photos[0] if p.photos else '' }}"
                         class="shrink-0 w-8 h-8 rounded-lg bg-crystal-primary hover:bg-crystal-hover text-white font-bold text-lg
                                flex items-center justify-center transition-colors shadow-sm shadow-crystal-primary/30">
                   +

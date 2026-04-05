@@ -83,6 +83,15 @@
       const p = new URLSearchParams(window.location.search)
       if (p.get('ref')) localStorage.setItem('crystal_ref', p.get('ref'))
     })()
+
+    // Função global — evita problemas de aspas em atributos Alpine
+    window.addToCart = function(el) {
+      const id    = el.dataset.id
+      const name  = el.dataset.name
+      const price = parseFloat(el.dataset.price)
+      const photo = el.dataset.photo || ''
+      Alpine.store('cart').add(id, name, price, photo)
+    }
   </script>
 
   <!-- Botão flutuante do carrinho -->
