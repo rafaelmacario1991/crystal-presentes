@@ -76,7 +76,7 @@ async def dashboard(request: Request, admin=Depends(require_admin)):
     total_produtos = db.get_products_admin(page=1, per_page=1)["total"]
     total_pedidos = db.get_pre_orders(page=1, per_page=1)["total"]
     pedidos_pendentes = db.get_pre_orders(status="pending", page=1, per_page=1)["total"]
-    ultimos_pedidos = db.get_pre_orders(page=1, per_page=5)["items"]
+    ultimos_pedidos = db.get_pre_orders(page=1, per_page=5)["data"]
 
     return templates.TemplateResponse("admin/dashboard.html", {
         "request": request,
