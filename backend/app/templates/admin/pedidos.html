@@ -1,0 +1,179 @@
+{% extends "admin/base_admin.html" %}
+{% set active_page = 'pedidos' %}
+{% block title %}Pré-pedidos — Crystal Presentes{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+  <h1 class="font-display font-bold text-2xl text-crystal-text">Pré-pedidos</h1>
+  <p class="text-crystal-muted text-sm mt-1">{{ result.total }} pré-pedido(s) registrado(s)</p>
+</div>
+
+<!-- Filtro de status -->
+<div class="flex flex-wrap gap-2 mb-5">
+  <a href="/admin/pedidos"
+     class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors
+            {% if not filters.status %}bg-crystal-primary text-white{% else %}bg-white border border-crystal-border text-crystal-muted hover:bg-crystal-bg{% endif %}">
+    Todos
+  </a>
+  <a href="/admin/pedidos?status=pending"
+     class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors
+            {% if filters.status == 'pending' %}bg-amber-500 text-white{% else %}bg-white border border-crystal-border text-crystal-muted hover:bg-crystal-bg{% endif %}">
+    Pendentes
+  </a>
+  <a href="/admin/pedidos?status=attended"
+     class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors
+            {% if filters.status == 'attended' %}bg-blue-500 text-white{% else %}bg-white border border-crystal-border text-crystal-muted hover:bg-crystal-bg{% endif %}">
+    Atendidos
+  </a>
+  <a href="/admin/pedidos?status=closed"
+     class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors
+            {% if filters.status == 'closed' %}bg-green-500 text-white{% else %}bg-white border border-crystal-border text-crystal-muted hover:bg-crystal-bg{% endif %}">
+    Encerrados
+  </a>
+</div>
+
+<!-- Lista de pedidos -->
+{% if result.data %}
+<div class="space-y-3">
+  {% for pedido in result.data %}
+  <div class="bg-white rounded-2xl border border-crystal-border overflow-hidden"
+       x-data="{ expanded: false }">
+
+    <!-- Cabeçalho do pedido -->
+    <button @click="expanded = !expanded"
+            class="w-full flex items-center justify-between px-5 py-4 hover:bg-crystal-bg/40 transition-colors text-left">
+      <div class="flex items-center gap-4 min-w-0">
+        <!-- Badge tipo -->
+        <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide
+               {% if pedido.customer_type == 'atacado' %}bg-purple-100 text-purple-700{% else %}bg-crystal-surface text-crystal-primary{% endif %}">
+          {{ pedido.customer_type or 'varejo' }}
+        </span>
+        <div class="min-w-0">
+          <p class="font-semibold text-crystal-text text-sm truncate">
+            {{ pedido.customer_name or 'Cliente sem nome' }}
+          </p>
+          <p class="text-crystal-muted text-xs mt-0.5">
+            {{ pedido.customer_phone }}
+            &middot;
+            {{ pedido.created_at[:10] if pedido.created_at else '' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 shrink-0 ml-4">
+        <div class="text-right hidden sm:block">
+          <p class="font-semibold text-crystal-text text-sm">R$ {{ "%.2f"|format(pedido.total_retail or 0) }}</p>
+          <p class="text-crystal-muted text-xs">{{ pedido.items|length }} ite(ns)</p>
+        </div>
+        {% set s = pedido.status %}
+        <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+          {% if s == 'pending' %}bg-amber-100 text-amber-700
+          {% elif s == 'attended' %}bg-blue-100 text-blue-700
+          {% else %}bg-green-100 text-green-700{% endif %}">
+          {{ status_label[s] }}
+        </span>
+        <svg class="w-4 h-4 text-crystal-muted transition-transform" :class="expanded ? 'rotate-180' : ''"
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </div>
+    </button>
+
+    <!-- Detalhe expansível -->
+    <div x-show="expanded" x-cloak class="border-t border-crystal-border">
+
+      <!-- Itens do pedido -->
+      <div class="px-5 py-4">
+        <p class="text-xs font-semibold text-crystal-muted uppercase tracking-wide mb-3">Itens do pré-pedido</p>
+        <div class="space-y-2">
+          {% for item in pedido.items %}
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-crystal-text">{{ item.qty }}x {{ item.name }}</span>
+            <span class="text-crystal-muted font-medium">R$ {{ "%.2f"|format(item.unit_price * item.qty) }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="border-t border-crystal-border mt-3 pt-3 flex justify-between font-semibold text-sm">
+          <span class="text-crystal-text">Total</span>
+          <span class="text-crystal-primary">R$ {{ "%.2f"|format(pedido.total_retail or 0) }}</span>
+        </div>
+
+        {% if pedido.notes %}
+        <div class="mt-3 p-3 bg-crystal-bg rounded-lg text-sm text-crystal-muted">
+          <span class="font-medium text-crystal-text">Observação:</span> {{ pedido.notes }}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Atualizar status -->
+      {% if pedido.status != 'closed' %}
+      <div class="px-5 py-4 bg-crystal-bg/50 border-t border-crystal-border">
+        <form method="POST" action="/admin/pedidos/{{ pedido.id }}/status" class="flex flex-wrap gap-3 items-end">
+          <div class="flex-1 min-w-40">
+            <label class="block text-xs font-medium text-crystal-muted mb-1">Atualizar status</label>
+            <select name="status"
+                    class="w-full px-3 py-2 text-sm rounded-lg border border-crystal-border bg-white text-crystal-text
+                           focus:outline-none focus:ring-2 focus:ring-crystal-primary/40">
+              {% if pedido.status == 'pending' %}
+              <option value="attended">Marcar como Atendido</option>
+              <option value="closed">Marcar como Encerrado</option>
+              {% elif pedido.status == 'attended' %}
+              <option value="closed">Marcar como Encerrado</option>
+              {% endif %}
+            </select>
+          </div>
+          <div class="flex-1 min-w-40">
+            <label class="block text-xs font-medium text-crystal-muted mb-1">Observação (opcional)</label>
+            <input type="text" name="notes" placeholder="Ex: Pagamento confirmado"
+                   class="w-full px-3 py-2 text-sm rounded-lg border border-crystal-border bg-white text-crystal-text
+                          focus:outline-none focus:ring-2 focus:ring-crystal-primary/40">
+          </div>
+          <button type="submit"
+                  class="px-4 py-2 bg-crystal-primary hover:bg-crystal-hover text-white text-sm font-semibold rounded-lg transition-colors">
+            Confirmar
+          </button>
+        </form>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Paginação -->
+{% if result.pages > 1 %}
+<div class="flex items-center justify-between mt-5">
+  <span class="text-crystal-muted text-xs">Página {{ result.page }} de {{ result.pages }}</span>
+  <div class="flex gap-2">
+    {% if result.page > 1 %}
+    <a href="?page={{ result.page - 1 }}{% if filters.status %}&status={{ filters.status }}{% endif %}"
+       class="px-3 py-1.5 border border-crystal-border rounded-lg text-sm text-crystal-muted hover:bg-white transition-colors">
+      ← Anterior
+    </a>
+    {% endif %}
+    {% if result.page < result.pages %}
+    <a href="?page={{ result.page + 1 }}{% if filters.status %}&status={{ filters.status }}{% endif %}"
+       class="px-3 py-1.5 bg-crystal-primary text-white rounded-lg text-sm font-semibold hover:bg-crystal-hover transition-colors">
+      Próxima →
+    </a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="bg-white rounded-2xl border border-crystal-border px-5 py-16 text-center">
+  <div class="w-14 h-14 rounded-2xl bg-crystal-surface flex items-center justify-center mx-auto mb-4">
+    <svg class="w-7 h-7 text-crystal-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+    </svg>
+  </div>
+  <p class="font-display font-bold text-crystal-text mb-1">Nenhum pré-pedido aqui</p>
+  <p class="text-crystal-muted text-sm">Os pré-pedidos criados pelo agente aparecerão aqui.</p>
+</div>
+{% endif %}
+
+{% endblock %}

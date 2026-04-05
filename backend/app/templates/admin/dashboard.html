@@ -1,0 +1,97 @@
+{% extends "admin/base_admin.html" %}
+{% set active_page = 'dashboard' %}
+{% block title %}Dashboard — Crystal Presentes{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+  <h1 class="font-display font-bold text-2xl text-crystal-text">Dashboard</h1>
+  <p class="text-crystal-muted text-sm mt-1">Visão geral do catálogo e pré-pedidos</p>
+</div>
+
+<!-- Cards de resumo -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+
+  <div class="bg-white rounded-2xl border border-crystal-border p-5">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-crystal-muted text-sm font-medium">Produtos ativos</span>
+      <div class="w-9 h-9 rounded-xl bg-crystal-surface flex items-center justify-center">
+        <svg class="w-5 h-5 text-crystal-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+        </svg>
+      </div>
+    </div>
+    <p class="font-display font-bold text-3xl text-crystal-text">{{ total_produtos }}</p>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-crystal-border p-5">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-crystal-muted text-sm font-medium">Pré-pedidos</span>
+      <div class="w-9 h-9 rounded-xl bg-crystal-surface flex items-center justify-center">
+        <svg class="w-5 h-5 text-crystal-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      </div>
+    </div>
+    <p class="font-display font-bold text-3xl text-crystal-text">{{ total_pedidos }}</p>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-crystal-border p-5">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-crystal-muted text-sm font-medium">Aguardando atendimento</span>
+      <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+    </div>
+    <p class="font-display font-bold text-3xl text-crystal-text">{{ pedidos_pendentes }}</p>
+  </div>
+
+</div>
+
+<!-- Últimos pré-pedidos -->
+<div class="bg-white rounded-2xl border border-crystal-border overflow-hidden">
+  <div class="flex items-center justify-between px-5 py-4 border-b border-crystal-border">
+    <h2 class="font-display font-bold text-base text-crystal-text">Últimos pré-pedidos</h2>
+    <a href="/admin/pedidos" class="text-crystal-primary text-sm font-medium hover:text-crystal-hover transition-colors">
+      Ver todos →
+    </a>
+  </div>
+
+  {% if ultimos_pedidos %}
+  <div class="divide-y divide-crystal-border">
+    {% for pedido in ultimos_pedidos %}
+    <div class="flex items-center justify-between px-5 py-3.5">
+      <div class="min-w-0">
+        <p class="font-medium text-sm text-crystal-text truncate">
+          {{ pedido.customer_name or 'Cliente sem nome' }}
+        </p>
+        <p class="text-crystal-muted text-xs mt-0.5">{{ pedido.customer_phone }} · {{ pedido.customer_type }}</p>
+      </div>
+      <div class="flex items-center gap-3 ml-4 shrink-0">
+        <span class="text-sm text-crystal-muted">
+          R$ {{ "%.2f"|format(pedido.total_retail or 0) }}
+        </span>
+        {% set s = pedido.status %}
+        <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+          {% if s == 'pending' %}bg-amber-100 text-amber-700
+          {% elif s == 'attended' %}bg-blue-100 text-blue-700
+          {% else %}bg-green-100 text-green-700{% endif %}">
+          {{ status_pedido_label[s] }}
+        </span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="px-5 py-10 text-center text-crystal-muted text-sm">
+    Nenhum pré-pedido recebido ainda.
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

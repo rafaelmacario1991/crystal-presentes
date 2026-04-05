@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block body %}
+
+<div class="flex min-h-screen" x-data="{ sidebarOpen: false }">
+
+  <!-- Overlay mobile -->
+  <div x-show="sidebarOpen" @click="sidebarOpen = false"
+       class="fixed inset-0 bg-black/30 z-20 lg:hidden" x-cloak></div>
+
+  <!-- Sidebar -->
+  <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+         class="fixed lg:static inset-y-0 left-0 z-30 w-64 bg-white border-r border-crystal-border
+                flex flex-col transition-transform duration-200 lg:translate-x-0">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3 px-5 py-4 border-b border-crystal-border">
+      <img src="/static/img/logo-crystal-presentes.jpeg" alt="Crystal Presentes" width="36" height="36" class="h-9 w-auto rounded-lg object-contain">
+      <p class="text-crystal-muted text-xs font-medium">Painel Admin</p>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <a href="/admin"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                {% if active_page == 'dashboard' %}bg-crystal-surface text-crystal-primary{% else %}text-crystal-muted hover:bg-crystal-bg hover:text-crystal-text{% endif %}
+                transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        Dashboard
+      </a>
+
+      <a href="/admin/produtos"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                {% if active_page == 'produtos' %}bg-crystal-surface text-crystal-primary{% else %}text-crystal-muted hover:bg-crystal-bg hover:text-crystal-text{% endif %}
+                transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+        </svg>
+        Produtos
+      </a>
+
+      <a href="/admin/pedidos"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                {% if active_page == 'pedidos' %}bg-crystal-surface text-crystal-primary{% else %}text-crystal-muted hover:bg-crystal-bg hover:text-crystal-text{% endif %}
+                transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        Pré-pedidos
+        {% if pedidos_pendentes is defined and pedidos_pendentes > 0 %}
+        <span class="ml-auto bg-crystal-primary text-white text-xs font-bold px-2 py-0.5 rounded-full">
+          {{ pedidos_pendentes }}
+        </span>
+        {% endif %}
+      </a>
+
+      <div class="pt-3 border-t border-crystal-border mt-3">
+        <a href="/catalogo" target="_blank"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-crystal-muted hover:bg-crystal-bg hover:text-crystal-text transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+          </svg>
+          Ver catálogo
+        </a>
+        <a href="/admin/logout"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-crystal-muted hover:bg-red-50 hover:text-red-500 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          Sair
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Conteúdo principal -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- Topbar mobile -->
+    <header class="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-crystal-border">
+      <button @click="sidebarOpen = true" class="p-1 text-crystal-muted">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <span class="font-display font-bold text-crystal-text">Crystal Presentes</span>
+      <div class="w-7"></div>
+    </header>
+
+    <!-- Página -->
+    <main class="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}

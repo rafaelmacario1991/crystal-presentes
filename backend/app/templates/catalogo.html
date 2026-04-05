@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+{% block title %}Catálogo — Crystal Presentes{% endblock %}
+
+{% block head %}
+<style>
+  [x-cloak] { display: none !important; }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<!-- NAVBAR -->
+<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-crystal-border">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+    <a href="/">
+      <img src="/static/img/logo-crystal-presentes.jpeg" alt="Crystal Presentes" width="40" height="40" class="h-10 w-auto rounded-lg object-contain">
+    </a>
+    <a href="https://wa.me/5581983138789" target="_blank"
+       class="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white
+              font-semibold text-sm rounded-xl transition-colors">
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.524 5.847L0 24l6.335-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.653-.51-5.17-1.398l-.371-.22-3.762.896.928-3.66-.242-.383A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+      </svg>
+      WhatsApp
+    </a>
+  </div>
+</nav>
+
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-8" x-data="{ filtrosAbertos: false }">
+
+  <!-- Cabeçalho -->
+  <div class="mb-6">
+    <h1 class="font-display font-bold text-2xl sm:text-3xl text-crystal-text">Catálogo de produtos</h1>
+    <p class="text-crystal-muted text-sm mt-1">{{ result.total }} produto(s) encontrado(s)</p>
+  </div>
+
+  <div class="flex gap-6">
+
+    <!-- Sidebar filtros — desktop -->
+    <aside class="hidden lg:block w-56 shrink-0">
+      <div class="bg-white rounded-2xl border border-crystal-border p-5 sticky top-24 space-y-5">
+
+        <div>
+          <p class="font-display font-semibold text-crystal-text text-sm mb-3">Buscar</p>
+          <form method="GET" action="/catalogo">
+            <input type="hidden" name="niche" value="{{ filters.niche or '' }}">
+            <input type="hidden" name="age_range" value="{{ filters.age_range or '' }}">
+            <input type="hidden" name="gender" value="{{ filters.gender or '' }}">
+            <input type="text" name="q" value="{{ filters.q or '' }}"
+                   placeholder="Nome do produto..."
+                   class="w-full px-3 py-2 text-sm rounded-xl border border-crystal-border bg-crystal-bg
+                          text-crystal-text focus:outline-none focus:ring-2 focus:ring-crystal-primary/40">
+          </form>
+        </div>
+
+        <form method="GET" action="/catalogo" id="filter-form-desktop">
+          {% if filters.q %}<input type="hidden" name="q" value="{{ filters.q }}">{% endif %}
+
+          <div class="space-y-4">
+            <!-- Nicho -->
+            <div>
+              <p class="font-display font-semibold text-crystal-text text-sm mb-2">Categoria</p>
+              <div class="space-y-1">
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input type="radio" name="niche" value=""
+                         {% if not filters.niche %}checked{% endif %}
+                         onchange="document.getElementById('filter-form-desktop').submit()"
+                         class="accent-crystal-primary">
+                  <span class="text-sm text-crystal-muted group-hover:text-crystal-text transition-colors">Todas</span>
+                </label>
+                {% for n in nichos %}
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input type="radio" name="niche" value="{{ n }}"
+                         {% if filters.niche == n %}checked{% endif %}
+                         onchange="document.getElementById('filter-form-desktop').submit()"
+                         class="accent-crystal-primary">
+                  <span class="text-sm text-crystal-muted group-hover:text-crystal-text transition-colors">{{ n }}</span>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Faixa etária -->
+            <div>
+              <p class="font-display font-semibold text-crystal-text text-sm mb-2">Faixa etária</p>
+              <div class="space-y-1">
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input type="radio" name="age_range" value=""
+                         {% if not filters.age_range %}checked{% endif %}
+                         onchange="document.getElementById('filter-form-desktop').submit()"
+                         class="accent-crystal-primary">
+                  <span class="text-sm text-crystal-muted group-hover:text-crystal-text transition-colors">Todas</span>
+                </label>
+                {% for f in faixas %}
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input type="radio" name="age_range" value="{{ f }}"
+                         {% if filters.age_range == f %}checked{% endif %}
+                         onchange="document.getElementById('filter-form-desktop').submit()"
+                         class="accent-crystal-primary">
+                  <span class="text-sm text-crystal-muted group-hover:text-crystal-text transition-colors">{{ faixas_label[f] }}</span>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Gênero -->
+            <div>
+              <p class="font-display font-semibold text-crystal-text text-sm mb-2">Para quem</p>
+              <div class="space-y-1">
+                {% for g, label in [('', 'Todos'), ('meninos', 'Meninos'), ('meninas', 'Meninas')] %}
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input type="radio" name="gender" value="{{ g }}"
+                         {% if filters.gender == g or (not filters.gender and not g) %}checked{% endif %}
+                         onchange="document.getElementById('filter-form-desktop').submit()"
+                         class="accent-crystal-primary">
+                  <span class="text-sm text-crystal-muted group-hover:text-crystal-text transition-colors">{{ label }}</span>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </form>
+
+        {% if filters.niche or filters.age_range or filters.gender or filters.q %}
+        <a href="/catalogo"
+           class="block text-center text-xs text-crystal-muted hover:text-crystal-primary transition-colors">
+          Limpar filtros
+        </a>
+        {% endif %}
+      </div>
+    </aside>
+
+    <!-- Conteúdo -->
+    <div class="flex-1 min-w-0">
+
+      <!-- Filtros mobile -->
+      <div class="lg:hidden mb-4 flex gap-2 items-center">
+        <button @click="filtrosAbertos = true"
+                class="flex items-center gap-2 px-4 py-2 bg-white border border-crystal-border rounded-xl text-sm font-semibold text-crystal-muted hover:bg-crystal-bg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+          </svg>
+          Filtros
+          {% if filters.niche or filters.age_range or filters.gender %}
+          <span class="w-2 h-2 rounded-full bg-crystal-primary"></span>
+          {% endif %}
+        </button>
+
+        <!-- Busca mobile -->
+        <form method="GET" action="/catalogo" class="flex-1">
+          {% if filters.niche %}<input type="hidden" name="niche" value="{{ filters.niche }}">{% endif %}
+          {% if filters.age_range %}<input type="hidden" name="age_range" value="{{ filters.age_range }}">{% endif %}
+          {% if filters.gender %}<input type="hidden" name="gender" value="{{ filters.gender }}">{% endif %}
+          <input type="text" name="q" value="{{ filters.q or '' }}" placeholder="Buscar produto..."
+                 class="w-full px-4 py-2 text-sm rounded-xl border border-crystal-border bg-white
+                        text-crystal-text focus:outline-none focus:ring-2 focus:ring-crystal-primary/40">
+        </form>
+      </div>
+
+      <!-- Drawer filtros mobile -->
+      <div x-show="filtrosAbertos" x-cloak class="fixed inset-0 z-50 lg:hidden">
+        <div class="absolute inset-0 bg-black/30" @click="filtrosAbertos = false"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto">
+          <div class="flex items-center justify-between mb-5">
+            <h3 class="font-display font-bold text-lg text-crystal-text">Filtros</h3>
+            <button @click="filtrosAbertos = false" class="p-1 text-crystal-muted">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <form method="GET" action="/catalogo" id="filter-form-mobile" class="space-y-5">
+            {% if filters.q %}<input type="hidden" name="q" value="{{ filters.q }}">{% endif %}
+
+            <div>
+              <p class="font-semibold text-crystal-text text-sm mb-3">Categoria</p>
+              <div class="flex flex-wrap gap-2">
+                <a href="/catalogo{% if filters.q %}?q={{ filters.q }}{% endif %}"
+                   class="px-3 py-1.5 rounded-xl text-sm font-medium border transition-colors
+                          {% if not filters.niche %}bg-crystal-primary text-white border-crystal-primary{% else %}bg-white border-crystal-border text-crystal-muted{% endif %}">
+                  Todas
+                </a>
+                {% for n in nichos %}
+                <a href="/catalogo?niche={{ n }}{% if filters.age_range %}&age_range={{ filters.age_range }}{% endif %}{% if filters.gender %}&gender={{ filters.gender }}{% endif %}{% if filters.q %}&q={{ filters.q }}{% endif %}"
+                   class="px-3 py-1.5 rounded-xl text-sm font-medium border transition-colors
+                          {% if filters.niche == n %}bg-crystal-primary text-white border-crystal-primary{% else %}bg-white border-crystal-border text-crystal-muted{% endif %}">
+                  {{ n }}
+                </a>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div>
+              <p class="font-semibold text-crystal-text text-sm mb-3">Faixa etária</p>
+              <div class="flex flex-wrap gap-2">
+                <a href="/catalogo{% if filters.niche %}?niche={{ filters.niche }}{% endif %}{% if filters.gender %}&gender={{ filters.gender }}{% endif %}{% if filters.q %}&q={{ filters.q }}{% endif %}"
+                   class="px-3 py-1.5 rounded-xl text-sm font-medium border transition-colors
+                          {% if not filters.age_range %}bg-crystal-primary text-white border-crystal-primary{% else %}bg-white border-crystal-border text-crystal-muted{% endif %}">
+                  Todas
+                </a>
+                {% for f in faixas %}
+                <a href="/catalogo?age_range={{ f }}{% if filters.niche %}&niche={{ filters.niche }}{% endif %}{% if filters.gender %}&gender={{ filters.gender }}{% endif %}{% if filters.q %}&q={{ filters.q }}{% endif %}"
+                   class="px-3 py-1.5 rounded-xl text-sm font-medium border transition-colors
+                          {% if filters.age_range == f %}bg-crystal-primary text-white border-crystal-primary{% else %}bg-white border-crystal-border text-crystal-muted{% endif %}">
+                  {{ faixas_label[f] }}
+                </a>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div>
+              <p class="font-semibold text-crystal-text text-sm mb-3">Para quem</p>
+              <div class="flex flex-wrap gap-2">
+                {% for g, label in [('', 'Todos'), ('meninos', 'Meninos'), ('meninas', 'Meninas')] %}
+                <a href="/catalogo{% if g %}?gender={{ g }}{% endif %}{% if filters.niche %}&niche={{ filters.niche }}{% endif %}{% if filters.age_range %}&age_range={{ filters.age_range }}{% endif %}{% if filters.q %}&q={{ filters.q }}{% endif %}"
+                   class="px-3 py-1.5 rounded-xl text-sm font-medium border transition-colors
+                          {% if filters.gender == g or (not filters.gender and not g) %}bg-crystal-primary text-white border-crystal-primary{% else %}bg-white border-crystal-border text-crystal-muted{% endif %}">
+                  {{ label }}
+                </a>
+                {% endfor %}
+              </div>
+            </div>
+
+            <button type="button" @click="filtrosAbertos = false"
+                    class="w-full py-3 bg-crystal-primary text-white font-bold rounded-2xl">
+              Ver resultados
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Grid de produtos -->
+      {% if result.data %}
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+        {% for p in result.data %}
+        <a href="/produto/{{ p.id }}" class="group card-hover block">
+          <div class="bg-white rounded-2xl border border-crystal-border overflow-hidden h-full">
+            <div class="aspect-square bg-crystal-surface relative overflow-hidden">
+              {% if p.photos and p.photos|length > 0 %}
+              <img src="{{ p.photos[0] }}" alt="{{ p.name }}"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                   loading="lazy">
+              {% else %}
+              <div class="w-full h-full flex items-center justify-center">
+                <span class="text-5xl">🎁</span>
+              </div>
+              {% endif %}
+              {% if p.status == 'featured' %}
+              <span class="absolute top-2 left-2 px-2 py-0.5 bg-crystal-primary text-white text-xs font-bold rounded-full">
+                ⭐ Destaque
+              </span>
+              {% endif %}
+              {% if p.availability == 'em_falta' %}
+              <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <span class="px-3 py-1 bg-white text-crystal-text text-xs font-bold rounded-full">Em falta</span>
+              </div>
+              {% endif %}
+            </div>
+            <div class="p-3">
+              <p class="text-xs text-crystal-muted mb-1">{{ p.niche }} · {{ p.age_range }} anos</p>
+              <p class="font-display font-semibold text-crystal-text text-sm leading-snug line-clamp-2 mb-2">
+                {{ p.name }}
+              </p>
+              <p class="font-bold text-crystal-primary text-base">
+                R$ {{ "%.2f"|format(p.retail_price)|replace('.', ',') }}
+              </p>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+      <!-- Paginação -->
+      {% if result.pages > 1 %}
+      <div class="flex items-center justify-center gap-3 mt-8">
+        {% if result.page > 1 %}
+        <a href="?page={{ result.page - 1 }}{% if filters.niche %}&niche={{ filters.niche }}{% endif %}{% if filters.age_range %}&age_range={{ filters.age_range }}{% endif %}{% if filters.gender %}&gender={{ filters.gender }}{% endif %}{% if filters.q %}&q={{ filters.q }}{% endif %}"
+           class="px-5 py-2.5 border border-crystal-border bg-white rounded-xl text-sm font-semibold text-crystal-muted hover:bg-crystal-bg transition-colors">
+          ← Anterior
+        </a>
+        {% endif %}
+        <span class="text-crystal-muted text-sm">{{ result.page }} / {{ result.pages }}</span>
+        {% if result.page < result.pages %}
+        <a href="?page={{ result.page + 1 }}{% if filters.niche %}&niche={{ filters.niche }}{% endif %}{% if filters.age_range %}&age_range={{ filters.age_range }}{% endif %}{% if filters.gender %}&gender={{ filters.gender }}{% endif %}{% if filters.q %}&q={{ filters.q }}{% endif %}"
+           class="px-5 py-2.5 bg-crystal-primary hover:bg-crystal-hover text-white rounded-xl text-sm font-semibold transition-colors">
+          Próxima →
+        </a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% else %}
+      <div class="bg-white rounded-2xl border border-crystal-border py-16 text-center">
+        <span class="text-5xl block mb-4">🔍</span>
+        <p class="font-display font-bold text-crystal-text text-lg mb-2">Nenhum produto encontrado</p>
+        <p class="text-crystal-muted text-sm mb-6">Tente outros filtros ou fale com a gente no WhatsApp.</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="/catalogo"
+             class="px-5 py-2.5 border border-crystal-border rounded-xl text-sm font-semibold text-crystal-muted hover:bg-crystal-bg transition-colors">
+            Limpar filtros
+          </a>
+          <a href="https://wa.me/5581983138789" target="_blank"
+             class="px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-xl text-sm font-semibold transition-colors">
+            Falar no WhatsApp
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<!-- Footer simples -->
+<footer class="border-t border-crystal-border mt-12 py-6 bg-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+    <a href="/"><img src="/static/img/logo-crystal-presentes.jpeg" alt="Crystal Presentes" width="28" height="28" loading="lazy" class="h-7 w-auto rounded object-contain"></a>
+    <p class="text-crystal-muted text-xs">© 2026 · Recife, PE</p>
+  </div>
+</footer>
+
+{% endblock %}

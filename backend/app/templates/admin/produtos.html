@@ -1,0 +1,215 @@
+{% extends "admin/base_admin.html" %}
+{% set active_page = 'produtos' %}
+{% block title %}Produtos — Crystal Presentes{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho -->
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="font-display font-bold text-2xl text-crystal-text">Produtos</h1>
+    <p class="text-crystal-muted text-sm mt-1">{{ result.total }} produto(s) cadastrado(s)</p>
+  </div>
+  <a href="/admin/produtos/novo"
+     class="flex items-center gap-2 px-4 py-2.5 bg-crystal-primary hover:bg-crystal-hover text-white
+            font-semibold text-sm rounded-xl transition-colors shadow-sm shadow-crystal-primary/30">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    Novo produto
+  </a>
+</div>
+
+<!-- Alertas de ação -->
+{% if request.query_params.get('created') %}
+<div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
+  Produto cadastrado com sucesso!
+</div>
+{% endif %}
+{% if request.query_params.get('deleted') %}
+<div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+  Produto excluído.
+</div>
+{% endif %}
+
+<!-- Filtros -->
+<div class="bg-white rounded-2xl border border-crystal-border p-4 mb-4">
+  <form method="GET" class="flex flex-wrap gap-3 items-end">
+    <div class="flex-1 min-w-36">
+      <label class="block text-xs font-medium text-crystal-muted mb-1">Nicho</label>
+      <select name="niche"
+              class="w-full px-3 py-2 text-sm rounded-lg border border-crystal-border bg-crystal-bg
+                     text-crystal-text focus:outline-none focus:ring-2 focus:ring-crystal-primary/40">
+        <option value="">Todos</option>
+        {% for n in nichos %}
+        <option value="{{ n }}" {% if filters.niche == n %}selected{% endif %}>{{ n }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="flex-1 min-w-36">
+      <label class="block text-xs font-medium text-crystal-muted mb-1">Status</label>
+      <select name="status"
+              class="w-full px-3 py-2 text-sm rounded-lg border border-crystal-border bg-crystal-bg
+                     text-crystal-text focus:outline-none focus:ring-2 focus:ring-crystal-primary/40">
+        <option value="">Todos</option>
+        {% for s, l in status_label.items() %}
+        <option value="{{ s }}" {% if filters.status == s %}selected{% endif %}>{{ l }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit"
+            class="px-4 py-2 bg-crystal-primary hover:bg-crystal-hover text-white text-sm font-semibold rounded-lg transition-colors">
+      Filtrar
+    </button>
+    {% if filters.niche or filters.status %}
+    <a href="/admin/produtos" class="px-4 py-2 text-crystal-muted text-sm hover:text-crystal-text transition-colors">
+      Limpar
+    </a>
+    {% endif %}
+  </form>
+</div>
+
+<!-- Tabela -->
+<div class="bg-white rounded-2xl border border-crystal-border overflow-hidden">
+  {% if result.data %}
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-crystal-border bg-crystal-bg/60">
+          <th class="text-left px-5 py-3 font-semibold text-crystal-muted text-xs uppercase tracking-wide">Produto</th>
+          <th class="text-left px-4 py-3 font-semibold text-crystal-muted text-xs uppercase tracking-wide hidden md:table-cell">Nicho</th>
+          <th class="text-left px-4 py-3 font-semibold text-crystal-muted text-xs uppercase tracking-wide hidden lg:table-cell">Faixa</th>
+          <th class="text-left px-4 py-3 font-semibold text-crystal-muted text-xs uppercase tracking-wide">Varejo</th>
+          <th class="text-left px-4 py-3 font-semibold text-crystal-muted text-xs uppercase tracking-wide hidden sm:table-cell">Status</th>
+          <th class="text-left px-4 py-3 font-semibold text-crystal-muted text-xs uppercase tracking-wide hidden sm:table-cell">Estoque</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-crystal-border">
+        {% for p in result.data %}
+        <tr class="hover:bg-crystal-bg/40 transition-colors">
+          <!-- Nome + foto -->
+          <td class="px-5 py-3">
+            <div class="flex items-center gap-3">
+              {% if p.photos and p.photos|length > 0 %}
+              <img src="{{ p.photos[0] }}" alt="{{ p.name }}"
+                   class="w-10 h-10 rounded-lg object-cover shrink-0 bg-crystal-surface">
+              {% else %}
+              <div class="w-10 h-10 rounded-lg bg-crystal-surface flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-crystal-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              {% endif %}
+              <span class="font-medium text-crystal-text truncate max-w-[160px]">{{ p.name }}</span>
+            </div>
+          </td>
+          <td class="px-4 py-3 text-crystal-muted hidden md:table-cell">{{ p.niche }}</td>
+          <td class="px-4 py-3 text-crystal-muted hidden lg:table-cell">{{ p.age_range }} anos</td>
+          <td class="px-4 py-3 font-semibold text-crystal-text">
+            R$ {{ "%.2f"|format(p.retail_price) }}
+          </td>
+          <td class="px-4 py-3 hidden sm:table-cell">
+            {% if p.status == 'featured' %}
+            <span class="px-2.5 py-1 bg-crystal-surface text-crystal-primary text-xs font-bold rounded-full">Destaque</span>
+            {% elif p.status == 'active' %}
+            <span class="px-2.5 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full">Ativo</span>
+            {% else %}
+            <span class="px-2.5 py-1 bg-gray-100 text-gray-500 text-xs font-semibold rounded-full">Inativo</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-3 hidden sm:table-cell">
+            {% if p.availability == 'disponivel' %}
+            <span class="px-2.5 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full">Disponível</span>
+            {% else %}
+            <span class="px-2.5 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-full">Em Falta</span>
+            {% endif %}
+          </td>
+          <!-- Ações -->
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-2 justify-end" x-data="{ confirmar: false }">
+              <a href="/admin/produtos/{{ p.id }}/editar"
+                 class="p-1.5 text-crystal-muted hover:text-crystal-primary hover:bg-crystal-surface rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </a>
+              <button @click="confirmar = true"
+                      class="p-1.5 text-crystal-muted hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+              <!-- Modal confirmar exclusão -->
+              <div x-show="confirmar" x-cloak
+                   class="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4">
+                <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+                  <h3 class="font-display font-bold text-lg text-crystal-text mb-2">Excluir produto?</h3>
+                  <p class="text-crystal-muted text-sm mb-5">Esta ação não pode ser desfeita.</p>
+                  <div class="flex gap-3">
+                    <button @click="confirmar = false"
+                            class="flex-1 py-2.5 border border-crystal-border text-crystal-muted rounded-xl text-sm font-semibold hover:bg-crystal-bg transition-colors">
+                      Cancelar
+                    </button>
+                    <form method="POST" action="/admin/produtos/{{ p.id }}/excluir" class="flex-1">
+                      <button type="submit"
+                              class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-semibold transition-colors">
+                        Excluir
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginação -->
+  {% if result.pages > 1 %}
+  <div class="flex items-center justify-between px-5 py-3 border-t border-crystal-border">
+    <span class="text-crystal-muted text-xs">
+      Página {{ result.page }} de {{ result.pages }}
+    </span>
+    <div class="flex gap-2">
+      {% if result.page > 1 %}
+      <a href="?page={{ result.page - 1 }}{% if filters.niche %}&niche={{ filters.niche }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}"
+         class="px-3 py-1.5 border border-crystal-border rounded-lg text-sm text-crystal-muted hover:bg-crystal-bg transition-colors">
+        ← Anterior
+      </a>
+      {% endif %}
+      {% if result.page < result.pages %}
+      <a href="?page={{ result.page + 1 }}{% if filters.niche %}&niche={{ filters.niche }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}"
+         class="px-3 py-1.5 bg-crystal-primary text-white rounded-lg text-sm font-semibold hover:bg-crystal-hover transition-colors">
+        Próxima →
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="px-5 py-16 text-center">
+    <div class="w-14 h-14 rounded-2xl bg-crystal-surface flex items-center justify-center mx-auto mb-4">
+      <svg class="w-7 h-7 text-crystal-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+      </svg>
+    </div>
+    <p class="font-display font-bold text-crystal-text mb-1">Nenhum produto encontrado</p>
+    <p class="text-crystal-muted text-sm mb-5">Ajuste os filtros ou cadastre o primeiro produto.</p>
+    <a href="/admin/produtos/novo"
+       class="inline-flex items-center gap-2 px-4 py-2.5 bg-crystal-primary hover:bg-crystal-hover text-white font-semibold text-sm rounded-xl transition-colors">
+      Cadastrar produto
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

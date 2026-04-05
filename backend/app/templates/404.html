@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Página não encontrada — Crystal Presentes{% endblock %}
+{% block body %}
+<div class="min-h-screen bg-crystal-bg flex items-center justify-center p-4">
+  <div class="text-center">
+    <span class="text-8xl block mb-6">🎁</span>
+    <h1 class="font-display font-bold text-3xl text-crystal-text mb-3">Página não encontrada</h1>
+    <p class="text-crystal-muted mb-8">Este produto ou página não existe mais.</p>
+    <a href="/catalogo"
+       class="inline-block px-6 py-3 bg-crystal-primary hover:bg-crystal-hover text-white font-bold rounded-2xl transition-colors">
+      Ver catálogo
+    </a>
+  </div>
+</div>
+{% endblock %}

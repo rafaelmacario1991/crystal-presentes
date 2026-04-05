@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — Crystal Presentes{% endblock %}
+
+{% block head %}
+<style>
+  [x-cloak] { display: none !important; }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<!-- NAVBAR -->
+<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-crystal-border">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+    <a href="/">
+      <img src="/static/img/logo-crystal-presentes.jpeg" alt="Crystal Presentes" width="40" height="40" class="h-10 w-auto rounded-lg object-contain">
+    </a>
+    <a href="/catalogo"
+       class="text-crystal-muted hover:text-crystal-text text-sm font-medium transition-colors">
+      ← Voltar ao catálogo
+    </a>
+  </div>
+</nav>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12"
+     x-data="{ fotoAtiva: 0 }">
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+
+    <!-- Galeria de fotos -->
+    <div class="space-y-3">
+      <!-- Foto principal -->
+      <div class="aspect-square bg-crystal-surface rounded-3xl overflow-hidden border border-crystal-border">
+        {% if product.photos and product.photos|length > 0 %}
+        {% for photo in product.photos %}
+        <img src="{{ photo }}" alt="{{ product.name }}"
+             x-show="fotoAtiva === {{ loop.index0 }}"
+             {% if loop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
+             class="w-full h-full object-cover">
+        {% endfor %}
+        {% else %}
+        <div class="w-full h-full flex items-center justify-center">
+          <span class="text-8xl">🎁</span>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Miniaturas -->
+      {% if product.photos and product.photos|length > 1 %}
+      <div class="flex gap-2 overflow-x-auto pb-1">
+        {% for photo in product.photos %}
+        <button @click="fotoAtiva = {{ loop.index0 }}"
+                :class="fotoAtiva === {{ loop.index0 }} ? 'border-crystal-primary' : 'border-crystal-border'"
+                class="shrink-0 w-16 h-16 rounded-xl border-2 overflow-hidden transition-colors">
+          <img src="{{ photo }}" alt="" loading="lazy" class="w-full h-full object-cover">
+        </button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Informações do produto -->
+    <div class="space-y-5">
+
+      <!-- Breadcrumb / badges -->
+      <div class="flex flex-wrap gap-2">
+        <a href="/catalogo?niche={{ product.niche }}"
+           class="px-3 py-1 bg-crystal-surface text-crystal-primary text-xs font-semibold rounded-full hover:bg-crystal-primary hover:text-white transition-colors">
+          {{ product.niche }}
+        </a>
+        <span class="px-3 py-1 bg-crystal-bg border border-crystal-border text-crystal-muted text-xs font-medium rounded-full">
+          {{ faixas_label[product.age_range] }}
+        </span>
+        {% if product.gender != 'ambos' %}
+        <span class="px-3 py-1 bg-crystal-bg border border-crystal-border text-crystal-muted text-xs font-medium rounded-full">
+          {{ product.gender|capitalize }}
+        </span>
+        {% endif %}
+        {% if product.status == 'featured' %}
+        <span class="px-3 py-1 bg-crystal-primary text-white text-xs font-bold rounded-full">
+          ⭐ Destaque
+        </span>
+        {% endif %}
+      </div>
+
+      <!-- Nome -->
+      <h1 class="font-display font-bold text-2xl sm:text-3xl text-crystal-text leading-tight">
+        {{ product.name }}
+      </h1>
+
+      <!-- Disponibilidade -->
+      {% if product.availability == 'disponivel' %}
+      <div class="flex items-center gap-2 text-sm">
+        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+        <span class="text-green-600 font-medium">Disponível em estoque</span>
+      </div>
+      {% else %}
+      <div class="flex items-center gap-2 text-sm">
+        <span class="w-2 h-2 rounded-full bg-red-400"></span>
+        <span class="text-red-500 font-medium">Em falta no momento</span>
+      </div>
+      {% endif %}
+
+      <!-- Preço varejo -->
+      <div class="py-4 border-y border-crystal-border">
+        <p class="text-crystal-muted text-xs mb-1">Preço varejo</p>
+        <p class="font-display font-bold text-3xl text-crystal-primary">
+          R$ {{ "%.2f"|format(product.retail_price)|replace('.', ',') }}
+        </p>
+        <p class="text-crystal-muted text-xs mt-2">
+          Preço atacado disponível mediante quantidade mínima — consulte via WhatsApp.
+        </p>
+      </div>
+
+      <!-- Descrição -->
+      {% if product.description %}
+      <div>
+        <p class="font-semibold text-crystal-text text-sm mb-2">Sobre o produto</p>
+        <p class="text-crystal-muted text-sm leading-relaxed">{{ product.description }}</p>
+      </div>
+      {% endif %}
+
+      <!-- CTAs -->
+      <div class="space-y-3 pt-2">
+        {% if product.availability == 'disponivel' %}
+        <a href="https://wa.me/5581983138789?text=Olá! Tenho interesse no produto: {{ product.name }} (R$ {{ '%.2f'|format(product.retail_price)|replace('.', ',') }}). Link: https://crystalpresentes.com.br/produto/{{ product.id }}"
+           target="_blank"
+           class="flex items-center justify-center gap-2 w-full py-3.5 bg-green-500 hover:bg-green-600
+                  text-white font-bold rounded-2xl transition-colors shadow-md shadow-green-500/25">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.524 5.847L0 24l6.335-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.653-.51-5.17-1.398l-.371-.22-3.762.896.928-3.66-.242-.383A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+          </svg>
+          Pedir pelo WhatsApp
+        </a>
+        {% else %}
+        <a href="https://wa.me/5581983138789?text=Olá! Quero saber quando o produto {{ product.name }} estará disponível."
+           target="_blank"
+           class="flex items-center justify-center gap-2 w-full py-3.5 bg-crystal-muted/20
+                  text-crystal-muted font-bold rounded-2xl transition-colors border border-crystal-border">
+          Avisar quando disponível
+        </a>
+        {% endif %}
+
+        <button onclick="navigator.clipboard.writeText(window.location.href).then(() => alert('Link copiado!'))"
+                class="flex items-center justify-center gap-2 w-full py-3 border border-crystal-border
+                       text-crystal-muted hover:bg-crystal-bg font-semibold text-sm rounded-2xl transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+          </svg>
+          Compartilhar produto
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Voltar ao catálogo -->
+  <div class="mt-10 pt-8 border-t border-crystal-border">
+    <a href="/catalogo"
+       class="inline-flex items-center gap-2 text-crystal-muted hover:text-crystal-text text-sm font-medium transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Voltar ao catálogo
+    </a>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="border-t border-crystal-border mt-8 py-6 bg-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+    <a href="/"><img src="/static/img/logo-crystal-presentes.jpeg" alt="Crystal Presentes" width="28" height="28" loading="lazy" class="h-7 w-auto rounded object-contain"></a>
+    <p class="text-crystal-muted text-xs">© 2026 · Recife, PE</p>
+  </div>
+</footer>
+
+{% endblock %}

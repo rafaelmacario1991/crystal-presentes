@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Crystal Presentes{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Varejo e atacado de brinquedos em Recife, PE. Bonecas, jogos educativos, cartelados e muito mais para todas as idades.{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}Crystal Presentes — Brinquedos para todos os momentos{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Varejo e atacado de brinquedos em Recife, PE. Encontre o presente perfeito para crianças de todas as idades.{% endblock %}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://crystalpresentes.com.br{% block og_url %}{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}https://crystalpresentes.com.br/static/img/logo-crystal-presentes.jpeg{% endblock %}">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            crystal: {
+              bg:      '#fdf6f8',
+              surface: '#fff0f4',
+              primary: '#e8728a',
+              hover:   '#d45570',
+              text:    '#2d1f24',
+              muted:   '#7a6068',
+              border:  '#f0d6de',
+            }
+          },
+          fontFamily: {
+            display: ['"Nunito"', 'sans-serif'],
+            body:    ['"Inter"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(232,114,138,0.15); }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body class="text-crystal-text font-body min-h-screen" style="{% block body_style %}background-color:#fdf6f8{% endblock %}">
+  {% block body %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+{% block title %}Crystal Presentes — Brinquedos para todos os momentos{% endblock %}
+
+{% block body_style %}background-color:#fdf6f8;background-image:repeating-linear-gradient(45deg,transparent 0px,transparent 24px,rgba(232,114,138,0.15) 24px,rgba(232,114,138,0.15) 48px),repeating-linear-gradient(-45deg,transparent 0px,transparent 24px,rgba(232,114,138,0.15) 24px,rgba(232,114,138,0.15) 48px);background-attachment:fixed{% endblock %}
+
+{% block head %}
+<style>
+  [x-cloak] { display: none !important; }
+
+  .section-white { background-color: rgba(255,255,255,0.85); }
+
+  .hero-gradient { background: linear-gradient(135deg, #fdf6f8 0%, #fff0f4 60%, #fde8ef 100%); }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Overlay diagonal fixo — mix-blend-mode garante visibilidade sobre qualquer fundo -->
+<div style="position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background-image:
+    repeating-linear-gradient(45deg,transparent 0px,transparent 24px,rgba(210,80,110,0.09) 24px,rgba(210,80,110,0.09) 48px),
+    repeating-linear-gradient(-45deg,transparent 0px,transparent 24px,rgba(210,80,110,0.09) 24px,rgba(210,80,110,0.09) 48px);
+  mix-blend-mode:multiply;">
+</div>
+<div class="min-h-screen">
+
+<!-- NAVBAR -->
+<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-crystal-border">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+    <a href="/" class="flex items-center gap-2">
+      <img src="/static/img/logo-crystal-presentes.jpeg" alt="Crystal Presentes" width="40" height="40" class="h-10 w-auto rounded-lg object-contain">
+    </a>
+    <div class="flex items-center gap-3">
+      <a href="/admin/login"
+         class="hidden sm:inline-flex items-center gap-1.5 text-crystal-muted hover:text-crystal-text text-sm font-medium transition-colors">
+        Admin
+      </a>
+      <a href="/catalogo"
+         class="flex items-center gap-2 px-4 py-2 bg-crystal-primary hover:bg-crystal-hover text-white
+                font-semibold text-sm rounded-xl transition-colors shadow-sm shadow-crystal-primary/30">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        Ver produtos
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero-gradient py-16 sm:py-24">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex flex-col md:flex-row items-center gap-8 lg:gap-12">
+
+      <!-- Crystalzinha -->
+      <div class="shrink-0 flex justify-center md:justify-start order-2 md:order-1">
+        <picture>
+          <source srcset="/static/img/logo-crystalzinha.webp" type="image/webp">
+          <img src="/static/img/logo-crystalzinha.jpeg"
+               alt="Crystalzinha"
+               width="288" height="288"
+               fetchpriority="high"
+               class="w-56 sm:w-64 lg:w-72 h-auto object-contain drop-shadow-xl rounded-3xl">
+        </picture>
+      </div>
+
+      <!-- Texto -->
+      <div class="flex-1 text-center md:text-left order-1 md:order-2">
+        <span class="inline-block px-3 py-1 bg-crystal-surface text-crystal-primary text-xs font-bold rounded-full mb-5 uppercase tracking-wide">
+          Recife · PE
+        </span>
+        <h1 class="font-display font-bold text-4xl sm:text-5xl lg:text-6xl text-crystal-text leading-tight mb-5">
+          Brinquedos que encantam,<br class="hidden sm:block">
+          <span class="text-crystal-primary">momentos que ficam</span>
+        </h1>
+        <p class="text-crystal-muted text-lg sm:text-xl mb-8 leading-relaxed">
+          Varejo e atacado de brinquedos para todas as idades. Atendemos Recife, região metropolitana e interior de Pernambuco.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+      <a href="/catalogo"
+         class="px-8 py-3.5 bg-crystal-primary hover:bg-crystal-hover text-white font-bold text-base
+                rounded-2xl transition-colors shadow-lg shadow-crystal-primary/30">
+        Explorar catálogo
+      </a>
+      <a href="https://wa.me/5581983138789"
+         target="_blank"
+         class="px-8 py-3.5 bg-white hover:bg-crystal-bg border border-crystal-border text-crystal-text
+                font-bold text-base rounded-2xl transition-colors flex items-center justify-center gap-2">
+        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.524 5.847L0 24l6.335-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.653-.51-5.17-1.398l-.371-.22-3.762.896.928-3.66-.242-.383A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+        </svg>
+        Falar no WhatsApp
+      </a>
+    </div>
+      </div><!-- fim texto -->
+    </div><!-- fim grid hero -->
+  </div>
+</section>
+
+<!-- NICHOS / CATEGORIAS -->
+<section class="py-14 section-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <h2 class="font-display font-bold text-2xl sm:text-3xl text-crystal-text text-center mb-3">
+      Navegue por categoria
+    </h2>
+    <p class="text-crystal-muted text-center mb-10">Encontre o presente perfeito para cada criança</p>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      {% set nicho_icons = {
+        'Educativo': '🎓',
+        'Jogos': '🎲',
+        'Festividades': '🎉',
+        'Puzzle': '🧩'
+      } %}
+      {% for n in nichos %}
+      <a href="/catalogo?niche={{ n }}"
+         class="flex flex-col items-center gap-2 p-4 bg-crystal-bg hover:bg-crystal-surface
+                rounded-2xl border border-crystal-border hover:border-crystal-primary
+                transition-all group card-hover text-center">
+
+        {% if n == 'Bonecas' %}
+        <img src="/static/img/boneca.webp" alt="Bonecas" width="32" height="32" loading="lazy" class="w-8 h-8 object-contain">
+
+        {% elif n == 'Cartelados' %}
+        <span class="text-3xl">🦸‍♂️</span>
+
+        {% else %}
+        <span class="text-3xl">{{ nicho_icons.get(n, '🎁') }}</span>
+        {% endif %}
+
+        <span class="font-display font-semibold text-sm text-crystal-text group-hover:text-crystal-primary transition-colors">
+          {{ n }}
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- DESTAQUES -->
+{% if products %}
+<section class="py-14">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class="font-display font-bold text-2xl sm:text-3xl text-crystal-text">Em destaque</h2>
+        <p class="text-crystal-muted text-sm mt-1">Os queridinhos do momento</p>
+      </div>
+      <a href="/catalogo"
+         class="text-crystal-primary font-semibold text-sm hover:text-crystal-hover transition-colors">
+        Ver todos →
+      </a>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      {% for p in products %}
+      <a href="/produto/{{ p.id }}" class="group card-hover block">
+        <div class="bg-white rounded-2xl border border-crystal-border overflow-hidden">
+          <!-- Foto -->
+          <div class="aspect-square bg-crystal-surface relative overflow-hidden">
+            {% if p.photos and p.photos|length > 0 %}
+            <img src="{{ p.photos[0] }}" alt="{{ p.name }}"
+                 loading="lazy"
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            {% else %}
+            <div class="w-full h-full flex items-center justify-center">
+              <span class="text-5xl">🎁</span>
+            </div>
+            {% endif %}
+            {% if p.status == 'featured' %}
+            <span class="absolute top-2 left-2 px-2 py-0.5 bg-crystal-primary text-white text-xs font-bold rounded-full">
+              Destaque
+            </span>
+            {% endif %}
+            {% if p.availability == 'em_falta' %}
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <span class="px-3 py-1 bg-white text-crystal-text text-xs font-bold rounded-full">Em falta</span>
+            </div>
+            {% endif %}
+          </div>
+          <!-- Info -->
+          <div class="p-3">
+            <p class="text-xs text-crystal-muted mb-1">{{ p.niche }} · {{ p.age_range }} anos</p>
+            <p class="font-display font-semibold text-crystal-text text-sm leading-tight line-clamp-2 mb-2">
+              {{ p.name }}
+            </p>
+            <p class="font-bold text-crystal-primary">
+              R$ {{ "%.2f"|format(p.retail_price)|replace('.', ',') }}
+            </p>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- VAREJO E ATACADO -->
+<section class="py-14 section-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <div class="bg-crystal-bg rounded-3xl p-8 border border-crystal-border">
+        <div class="w-12 h-12 rounded-2xl bg-crystal-surface flex items-center justify-center mb-5">
+          <span class="text-2xl">🛍️</span>
+        </div>
+        <h3 class="font-display font-bold text-xl text-crystal-text mb-2">Varejo</h3>
+        <p class="text-crystal-muted leading-relaxed">
+          Compre um ou mais brinquedos para presentear quem você ama. Preços acessíveis e produtos de qualidade.
+        </p>
+        <a href="/catalogo" class="inline-block mt-5 text-crystal-primary font-semibold text-sm hover:text-crystal-hover transition-colors">
+          Ver catálogo →
+        </a>
+      </div>
+
+      <div class="bg-gradient-to-br from-crystal-primary to-crystal-hover rounded-3xl p-8 text-white">
+        <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-5">
+          <span class="text-2xl">📦</span>
+        </div>
+        <h3 class="font-display font-bold text-xl mb-2">Atacado</h3>
+        <p class="text-white/80 leading-relaxed">
+          Preços especiais para revendedores. Sem necessidade de CNPJ — preço de atacado ativado pela quantidade mínima por produto.
+        </p>
+        <a href="https://wa.me/5581983138789" target="_blank"
+           class="inline-block mt-5 text-white font-semibold text-sm hover:text-white/80 transition-colors">
+          Falar com a equipe →
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- LOCALIZAÇÃO / CONTATO -->
+<section class="py-14">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+
+    <div class="bg-white rounded-3xl border border-crystal-border overflow-hidden shadow-sm">
+      <div class="grid grid-cols-1 md:grid-cols-2">
+
+        <!-- Foto da fachada -->
+        <div class="relative h-64 md:h-auto min-h-64">
+          <picture>
+            <source srcset="/static/img/frente-loja.webp" type="image/webp">
+            <img src="/static/img/frente-loja.jpeg"
+                 alt="Fachada da Crystal Presentes"
+                 loading="lazy"
+                 class="absolute inset-0 w-full h-full object-cover">
+          </picture>
+          <!-- Overlay sutil com tag -->
+          <div class="absolute bottom-4 left-4">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur-sm
+                         rounded-full text-xs font-semibold text-crystal-text shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-green-500"></span>
+              Loja física · Recife, PE
+            </span>
+          </div>
+        </div>
+
+        <!-- Informações -->
+        <div class="flex flex-col justify-center p-8 sm:p-10">
+          <h2 class="font-display font-bold text-2xl sm:text-3xl text-crystal-text mb-2">
+            Venha nos visitar
+          </h2>
+          <p class="text-crystal-muted text-sm leading-relaxed mb-1">
+            R. Santa Rita, 290 - São José
+          </p>
+          <p class="text-crystal-muted text-sm mb-1">Recife - PE · CEP 50020-320</p>
+          <p class="text-crystal-muted text-xs mb-8">
+            Atendemos também região metropolitana e interior de Pernambuco
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href="https://wa.me/5581983138789" target="_blank"
+               class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-green-500 hover:bg-green-600
+                      text-white font-semibold text-sm rounded-2xl transition-colors">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.524 5.847L0 24l6.335-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.653-.51-5.17-1.398l-.371-.22-3.762.896.928-3.66-.242-.383A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+              </svg>
+              (81) 98313-8789
+            </a>
+            <a href="https://instagram.com/lojacrystalpresentes" target="_blank"
+               class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-crystal-bg hover:bg-crystal-surface
+                      border border-crystal-border text-crystal-text font-semibold text-sm rounded-2xl transition-colors">
+              <svg class="w-4 h-4 text-crystal-primary" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+              </svg>
+              @lojacrystalpresentes
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-white border-t border-crystal-border py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <img src="/static/img/logo-crystal-presentes.jpeg" alt="Crystal Presentes" width="32" height="32" loading="lazy" class="h-8 w-auto rounded object-contain">
+    <p class="text-crystal-muted text-xs">© 2026 Crystal Presentes · Recife, PE</p>
+    <a href="/admin/login" class="text-crystal-muted text-xs hover:text-crystal-text transition-colors">Admin</a>
+  </div>
+</footer>
+</div>
+{% endblock %}
