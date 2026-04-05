@@ -141,8 +141,8 @@
       <!-- CTAs -->
       <div class="space-y-3 pt-2">
         {% if product.availability == 'disponivel' %}
-        <button type="button"
-                onclick="addToCart(this)"
+        <button type="button" x-data
+                @click="$store.cart.add($el.dataset.id, $el.dataset.name, parseFloat($el.dataset.price), $el.dataset.photo)"
                 data-id="{{ product.id }}"
                 data-name="{{ product.name }}"
                 data-price="{{ product.retail_price }}"

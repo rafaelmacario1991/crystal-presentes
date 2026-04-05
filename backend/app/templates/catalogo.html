@@ -279,8 +279,8 @@
                 <p class="font-bold text-crystal-primary text-base">
                   R$ {{ "%.2f"|format(p.retail_price)|replace('.', ',') }}
                 </p>
-                <button type="button"
-                        onclick="event.preventDefault(); addToCart(this)"
+                <button type="button" x-data
+                        @click.stop="$store.cart.add($el.dataset.id, $el.dataset.name, parseFloat($el.dataset.price), $el.dataset.photo)"
                         data-id="{{ p.id }}"
                         data-name="{{ p.name }}"
                         data-price="{{ p.retail_price }}"
