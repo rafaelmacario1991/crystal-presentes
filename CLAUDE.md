@@ -17,14 +17,14 @@ O catálogo é a fonte de dados central: alimenta o frontend público e o agente
 - **Banco de dados:** Supabase (PostgreSQL + Storage para imagens)
 - **Agente de IA:** n8n + WhatsApp Business Cloud API + Supabase (service role key restrita ao n8n)
 - **Infraestrutura:** VPS Hostinger (mesma do MK Report), Nginx, SSL Let's Encrypt / Certbot
-- **Deploy:** Git push GitHub → script PowerShell SSH para VPS
+- **Deploy:** `python deploy/_ssh_deploy.py` (paramiko SSH) — steps: 3 (git pull) + 6 (restart serviço). Não usar `deploy/setup_ssl.py` como nome para scripts novos (era `_ssl.py`, renomeado pois conflitava com o módulo builtin `_ssl` do Python).
 
 ---
 
 ## Repositório e Deploy
 
-- **GitHub:** [a definir — criar repositório `crystal-presentes`]
-- **Domínio:** crystalpresentes.com.br (já adquirido)
+- **GitHub:** https://github.com/rafaelmacario1991/crystal-presentes
+- **Domínio:** crystalpresentes.com.br (já adquirido, SSL ativo via Certbot)
 - **Supabase URL:** https://qltfwxmflygyrobvwqxw.supabase.co
 - **Supabase Anon Key:** sb_publishable_PtCxpU9f3M70teEyfS8u3A_dxSMeYi0
 - **VPS:** mesma do MK Report (72.62.10.198)
@@ -279,9 +279,9 @@ Atendimento humano assume para pagamento e entrega
 
 | # | Pendência | Impacto |
 |---|---|---|
-| P1 | Criar repositório GitHub `crystal-presentes` | Bloqueia deploy |
-| P2 | ~~Definir porta uvicorn~~ **porta 8001 definida** | Resolvido |
-| P3 | ~~Criar projeto Supabase~~ **projeto criado** | Resolvido |
+| P1 | ~~Criar repositório GitHub `crystal-presentes`~~ **criado e em uso** | Resolvido |
+| P2 | ~~Definir porta uvicorn~~ **porta 8002 (não 8001 — conflito)** | Resolvido |
+| P3 | ~~Criar projeto Supabase~~ **projeto criado, migration `source` executada** | Resolvido |
 | P4 | WABA criado e aprovado pela Meta | Bloqueia Fase 5 |
 | P5 | Quantidade mínima de peças por produto para atacado | Impacta agente e cadastro |
 | P6 | Validar lista de nichos com práticas do mercado (ABBrinq/ABNT) | Impacta cadastro em massa |
@@ -297,5 +297,12 @@ Atendimento humano assume para pagamento e entrega
 - `wholesale_price` e `supplier` **nunca** devem aparecer em rotas públicas ou respostas de API sem autenticação
 - Antes de qualquer migração de banco, verificar RLS e testar isoladamente
 - Nunca inventar dados de produtos, preços ou disponibilidade — se não souber, perguntar
-- Deploy sempre via script PowerShell SSH — não executar comandos destrutivos sem confirmação
+- Deploy sempre via `python deploy/_ssh_deploy.py <step>` — steps 3 (git pull) e 6 (restart) são os mais usados no dia a dia
 - Manter consistência visual com a paleta definida — não alterar cores sem solicitação
+
+## Armadilhas Conhecidas
+
+- **Jinja2 + dict com chave `items`:** `pedido.items` resolve para o método `.items()` do dicionário Python. Sempre usar `pedido['items']` para acessar o campo JSONB do banco.
+- **Alpine.js + botão dentro de `<a>`:** usar `@click.stop` para evitar que o clique borbulhe para o link pai. Nunca usar `|tojson` dentro de atributos `@click="..."` — as aspas duplas quebram o atributo HTML. Solução correta: `x-data` no botão + `@click.stop` + `$el.dataset.*` para passar dados.
+- **`deploy/_ssl.py`:** renomeado para `deploy/setup_ssl.py` pois o nome `_ssl` conflita com o módulo builtin C do Python, causando circular import no paramiko.
+- **Supabase key format:** versão `supabase>=2.8` é necessária para aceitar chaves no formato `sb_publishable_*`. Versão 2.7.4 rejeita silenciosamente.
