@@ -141,15 +141,25 @@
       <!-- CTAs -->
       <div class="space-y-3 pt-2">
         {% if product.availability == 'disponivel' %}
+        <button x-data
+                @click="$store.cart.add('{{ product.id }}', {{ product.name|tojson }}, {{ product.retail_price }}, '{{ product.photos[0] if product.photos else '' }}')"
+                class="flex items-center justify-center gap-2 w-full py-3.5 bg-crystal-primary hover:bg-crystal-hover
+                       text-white font-bold rounded-2xl transition-colors shadow-md shadow-crystal-primary/25">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          Adicionar ao carrinho
+        </button>
         <a href="https://wa.me/5581983138789?text=Olá! Tenho interesse no produto: {{ product.name }} (R$ {{ '%.2f'|format(product.retail_price)|replace('.', ',') }}). Link: https://crystalpresentes.com.br/produto/{{ product.id }}"
            target="_blank"
-           class="flex items-center justify-center gap-2 w-full py-3.5 bg-green-500 hover:bg-green-600
-                  text-white font-bold rounded-2xl transition-colors shadow-md shadow-green-500/25">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+           class="flex items-center justify-center gap-2 w-full py-3 bg-white border border-crystal-border
+                  text-crystal-muted hover:bg-crystal-bg font-semibold text-sm rounded-2xl transition-colors">
+          <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
             <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.524 5.847L0 24l6.335-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.653-.51-5.17-1.398l-.371-.22-3.762.896.928-3.66-.242-.383A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
           </svg>
-          Pedir pelo WhatsApp
+          Falar direto no WhatsApp
         </a>
         {% else %}
         <a href="https://wa.me/5581983138789?text=Olá! Quero saber quando o produto {{ product.name }} estará disponível."

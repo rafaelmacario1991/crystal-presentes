@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     app_host: str = "0.0.0.0"
     app_port: int = 8001
 
+    # n8n webhook (opcional — dispara ao criar pré-pedido pelo site)
+    n8n_webhook_url: str = ""
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

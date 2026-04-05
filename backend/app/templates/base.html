@@ -42,10 +42,193 @@
   <style>
     .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
     .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(232,114,138,0.15); }
+    [x-cloak] { display: none !important; }
   </style>
   {% block head %}{% endblock %}
 </head>
 <body class="text-crystal-text font-body min-h-screen" style="{% block body_style %}background-color:#fdf6f8{% endblock %}">
+
+  {% block cart_ui %}
+  <!-- =====================================================
+       CARRINHO — Alpine.js store + drawer
+       Suprimido nas páginas admin via override em base_admin.html
+  ====================================================== -->
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.store('cart', {
+        open: false,
+        checkoutOpen: false,
+        items: JSON.parse(localStorage.getItem('crystal_cart') || '[]'),
+
+        get count() { return this.items.reduce((s, i) => s + i.qty, 0) },
+        get total() { return this.items.reduce((s, i) => s + i.price * i.qty, 0) },
+
+        add(id, name, price, photo) {
+          const ex = this.items.find(i => i.id === id)
+          if (ex) { ex.qty++ } else { this.items.push({ id, name, price: parseFloat(price), qty: 1, photo: photo || '' }) }
+          this.save()
+          this.open = true
+        },
+        remove(id) { this.items = this.items.filter(i => i.id !== id); this.save() },
+        inc(id) { const i = this.items.find(i => i.id === id); if(i) { i.qty++; this.save() } },
+        dec(id) { const i = this.items.find(i => i.id === id); if(i) { i.qty = Math.max(1, i.qty-1); this.save() } },
+        clear() { this.items = []; this.save() },
+        save() { localStorage.setItem('crystal_cart', JSON.stringify(this.items)) },
+        fmt(v) { return 'R$ ' + v.toFixed(2).replace('.', ',') }
+      })
+    })
+
+    // Bridge WhatsApp→Web: salva ?ref= no localStorage
+    (function() {
+      const p = new URLSearchParams(window.location.search)
+      if (p.get('ref')) localStorage.setItem('crystal_ref', p.get('ref'))
+    })()
+  </script>
+
+  <!-- Botão flutuante do carrinho -->
+  <div x-data x-show="$store.cart.count > 0" x-cloak
+       class="fixed bottom-6 right-6 z-40">
+    <button @click="$store.cart.open = true"
+            class="relative flex items-center gap-2 px-5 py-3 bg-crystal-primary hover:bg-crystal-hover
+                   text-white font-bold rounded-2xl shadow-lg shadow-crystal-primary/40 transition-all">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+      </svg>
+      Carrinho
+      <span x-text="$store.cart.count"
+            class="absolute -top-2 -right-2 w-5 h-5 bg-white text-crystal-primary text-xs font-black rounded-full flex items-center justify-center shadow"></span>
+    </button>
+  </div>
+
+  <!-- Drawer do carrinho -->
+  <div x-data x-show="$store.cart.open" x-cloak class="fixed inset-0 z-50 flex justify-end">
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/40" @click="$store.cart.open = false; $store.cart.checkoutOpen = false"></div>
+
+    <!-- Painel -->
+    <div class="relative w-full max-w-md bg-white h-full flex flex-col shadow-2xl overflow-hidden">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-crystal-border">
+        <h2 class="font-display font-bold text-lg text-crystal-text">
+          Carrinho
+          <span class="text-crystal-muted text-sm font-normal ml-1" x-text="'(' + $store.cart.count + ' ite' + ($store.cart.count === 1 ? 'm' : 'ns') + ')'"></span>
+        </h2>
+        <button @click="$store.cart.open = false; $store.cart.checkoutOpen = false"
+                class="p-1.5 text-crystal-muted hover:text-crystal-text hover:bg-crystal-bg rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Itens -->
+      <div x-show="!$store.cart.checkoutOpen" class="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+        <template x-for="item in $store.cart.items" :key="item.id">
+          <div class="flex items-center gap-3 bg-crystal-bg rounded-xl p-3">
+            <img :src="item.photo || '/static/img/logo-crystal-presentes.jpeg'" :alt="item.name"
+                 class="w-14 h-14 rounded-lg object-cover shrink-0">
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-crystal-text leading-tight line-clamp-2" x-text="item.name"></p>
+              <p class="text-crystal-primary text-sm font-bold mt-0.5" x-text="$store.cart.fmt(item.price)"></p>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button @click="$store.cart.dec(item.id)"
+                      class="w-7 h-7 rounded-lg bg-white border border-crystal-border text-crystal-muted hover:bg-crystal-surface font-bold text-sm flex items-center justify-center transition-colors">−</button>
+              <span class="w-6 text-center text-sm font-bold text-crystal-text" x-text="item.qty"></span>
+              <button @click="$store.cart.inc(item.id)"
+                      class="w-7 h-7 rounded-lg bg-white border border-crystal-border text-crystal-muted hover:bg-crystal-surface font-bold text-sm flex items-center justify-center transition-colors">+</button>
+              <button @click="$store.cart.remove(item.id)"
+                      class="w-7 h-7 rounded-lg text-red-400 hover:bg-red-50 flex items-center justify-center ml-1 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Formulário de checkout -->
+      <div x-show="$store.cart.checkoutOpen" class="flex-1 overflow-y-auto px-5 py-4">
+        <button @click="$store.cart.checkoutOpen = false"
+                class="flex items-center gap-1.5 text-crystal-muted hover:text-crystal-text text-sm mb-5 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Voltar ao carrinho
+        </button>
+
+        <form method="POST" action="/pedidos" @submit="
+          document.getElementById('items-json').value = JSON.stringify($store.cart.items);
+          document.getElementById('source-field').value = localStorage.getItem('crystal_ref') ? 'web_via_whatsapp' : 'web';
+        " class="space-y-4">
+          <input type="hidden" id="items-json" name="items_json" value="">
+          <input type="hidden" id="source-field" name="source" value="web">
+
+          <div>
+            <label class="block text-sm font-medium text-crystal-text mb-1.5">Seu nome *</label>
+            <input type="text" name="customer_name" required
+                   class="w-full px-4 py-2.5 rounded-xl border border-crystal-border bg-crystal-bg text-crystal-text text-sm
+                          focus:outline-none focus:ring-2 focus:ring-crystal-primary/40 focus:border-crystal-primary"
+                   placeholder="Nome completo">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-crystal-text mb-1.5">WhatsApp *</label>
+            <input type="tel" name="customer_phone" required
+                   x-init="$el.value = localStorage.getItem('crystal_ref') || ''"
+                   class="w-full px-4 py-2.5 rounded-xl border border-crystal-border bg-crystal-bg text-crystal-text text-sm
+                          focus:outline-none focus:ring-2 focus:ring-crystal-primary/40 focus:border-crystal-primary"
+                   placeholder="(81) 99999-9999">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-crystal-text mb-1.5">Tipo de compra *</label>
+            <select name="customer_type"
+                    class="w-full px-4 py-2.5 rounded-xl border border-crystal-border bg-crystal-bg text-crystal-text text-sm
+                           focus:outline-none focus:ring-2 focus:ring-crystal-primary/40">
+              <option value="varejo">Varejo — compra unitária</option>
+              <option value="atacado">Atacado — quantidade maior</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-crystal-text mb-1.5">Observações</label>
+            <textarea name="notes" rows="2"
+                      class="w-full px-4 py-2.5 rounded-xl border border-crystal-border bg-crystal-bg text-crystal-text text-sm
+                             focus:outline-none focus:ring-2 focus:ring-crystal-primary/40 resize-none"
+                      placeholder="Ex: entrega, endereço, dúvida sobre produto..."></textarea>
+          </div>
+
+          <button type="submit"
+                  class="w-full py-3.5 bg-crystal-primary hover:bg-crystal-hover text-white font-bold rounded-2xl transition-colors shadow-sm shadow-crystal-primary/30">
+            Confirmar pré-pedido
+          </button>
+          <p class="text-center text-crystal-muted text-xs">Nossa equipe entrará em contato pelo WhatsApp para finalizar.</p>
+        </form>
+      </div>
+
+      <!-- Footer com total e botão avançar -->
+      <div x-show="!$store.cart.checkoutOpen" class="px-5 py-4 border-t border-crystal-border bg-white space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-crystal-muted text-sm">Total estimado</span>
+          <span class="font-display font-bold text-xl text-crystal-primary" x-text="$store.cart.fmt($store.cart.total)"></span>
+        </div>
+        <button @click="$store.cart.checkoutOpen = true"
+                class="w-full py-3.5 bg-crystal-primary hover:bg-crystal-hover text-white font-bold rounded-2xl transition-colors shadow-sm shadow-crystal-primary/30">
+          Fazer pré-pedido →
+        </button>
+        <button @click="$store.cart.clear()"
+                class="w-full py-2 text-crystal-muted hover:text-red-500 text-sm font-medium transition-colors">
+          Esvaziar carrinho
+        </button>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
+
   {% block body %}{% endblock %}
 </body>
 </html>

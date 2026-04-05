@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Pré-pedido confirmado — Crystal Presentes{% endblock %}
+
+{% block body %}
+
+<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-crystal-border">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+    <a href="/" class="flex items-center gap-2 shrink-0">
+      <img src="/static/img/logo-crystal-presentes.jpeg" alt="Crystal Presentes" width="40" height="40" class="h-10 w-auto rounded-lg object-contain">
+    </a>
+    <div class="hidden sm:flex items-center gap-1">
+      <a href="/" class="px-3 py-1.5 rounded-lg text-sm font-medium text-crystal-muted hover:text-crystal-text hover:bg-crystal-bg transition-colors">Início</a>
+      <a href="/catalogo" class="px-3 py-1.5 rounded-lg text-sm font-medium text-crystal-muted hover:text-crystal-text hover:bg-crystal-bg transition-colors">Catálogo</a>
+    </div>
+    <a href="https://wa.me/5581983138789" target="_blank"
+       class="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold text-sm rounded-xl transition-colors">
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.524 5.847L0 24l6.335-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.653-.51-5.17-1.398l-.371-.22-3.762.896.928-3.66-.242-.383A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+      </svg>
+      <span class="hidden sm:inline">WhatsApp</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Limpa o carrinho após confirmação -->
+<script>localStorage.removeItem('crystal_cart')</script>
+
+<div class="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
+
+  <!-- Ícone de sucesso -->
+  <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+    <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+    </svg>
+  </div>
+
+  <h1 class="font-display font-bold text-2xl sm:text-3xl text-crystal-text mb-3">
+    Pré-pedido recebido!
+  </h1>
+  {% if customer_name %}
+  <p class="text-crystal-muted mb-1">Olá, <strong>{{ customer_name }}</strong>!</p>
+  {% endif %}
+  <p class="text-crystal-muted mb-8">
+    Nossa equipe vai entrar em contato pelo WhatsApp para confirmar os detalhes e fechar o pedido.
+  </p>
+
+  <!-- Resumo -->
+  <div class="bg-white rounded-2xl border border-crystal-border p-5 text-left mb-8">
+    <p class="font-semibold text-crystal-text text-sm mb-3">Resumo do pré-pedido</p>
+    <div class="space-y-2">
+      {% for item in items %}
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-crystal-text">{{ item.qty }}x {{ item.name }}</span>
+        <span class="text-crystal-muted font-medium">R$ {{ "%.2f"|format(item.unit_price * item.qty)|replace('.', ',') }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="border-t border-crystal-border mt-3 pt-3 flex justify-between font-bold">
+      <span class="text-crystal-text">Total estimado</span>
+      <span class="text-crystal-primary text-lg">R$ {{ "%.2f"|format(total)|replace('.', ',') }}</span>
+    </div>
+  </div>
+
+  <div class="flex flex-col sm:flex-row gap-3 justify-center">
+    <a href="/catalogo"
+       class="px-6 py-3 border border-crystal-border rounded-2xl text-sm font-semibold text-crystal-muted hover:bg-crystal-bg transition-colors">
+      Continuar comprando
+    </a>
+    <a href="https://wa.me/5581983138789" target="_blank"
+       class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-2xl text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+      Falar no WhatsApp
+    </a>
+  </div>
+
+</div>
+
+<footer class="border-t border-crystal-border py-6 bg-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+    <p class="text-crystal-muted text-xs">© 2026 Crystal Presentes · Recife, PE</p>
+  </div>
+</footer>
+
+{% endblock %}
