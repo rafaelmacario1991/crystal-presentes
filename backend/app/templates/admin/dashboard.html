@@ -12,7 +12,7 @@
 <!-- Cards de resumo -->
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
 
-  <div class="bg-white rounded-2xl border border-crystal-border p-5">
+  <a href="/admin/produtos" class="block bg-white rounded-2xl border border-crystal-border p-5 hover:border-crystal-primary hover:shadow-md transition-all cursor-pointer">
     <div class="flex items-center justify-between mb-3">
       <span class="text-crystal-muted text-sm font-medium">Produtos ativos</span>
       <div class="w-9 h-9 rounded-xl bg-crystal-surface flex items-center justify-center">
@@ -23,9 +23,9 @@
       </div>
     </div>
     <p class="font-display font-bold text-3xl text-crystal-text">{{ total_produtos }}</p>
-  </div>
+  </a>
 
-  <div class="bg-white rounded-2xl border border-crystal-border p-5">
+  <a href="/admin/pedidos" class="block bg-white rounded-2xl border border-crystal-border p-5 hover:border-crystal-primary hover:shadow-md transition-all cursor-pointer">
     <div class="flex items-center justify-between mb-3">
       <span class="text-crystal-muted text-sm font-medium">Pré-pedidos</span>
       <div class="w-9 h-9 rounded-xl bg-crystal-surface flex items-center justify-center">
@@ -36,9 +36,9 @@
       </div>
     </div>
     <p class="font-display font-bold text-3xl text-crystal-text">{{ total_pedidos }}</p>
-  </div>
+  </a>
 
-  <div class="bg-white rounded-2xl border border-crystal-border p-5">
+  <a href="/admin/pedidos?status=pending" class="block bg-white rounded-2xl border border-crystal-border p-5 hover:border-amber-400 hover:shadow-md transition-all cursor-pointer">
     <div class="flex items-center justify-between mb-3">
       <span class="text-crystal-muted text-sm font-medium">Aguardando atendimento</span>
       <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
@@ -49,7 +49,7 @@
       </div>
     </div>
     <p class="font-display font-bold text-3xl text-crystal-text">{{ pedidos_pendentes }}</p>
-  </div>
+  </a>
 
 </div>
 
