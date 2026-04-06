@@ -58,7 +58,7 @@ def get_products_public(
     if gender and gender != "ambos":
         query = query.in_("gender", [gender, "ambos"])
     if search:
-        query = query.text_search("search_vector", search, config="portuguese")
+        query = query.or_(f"name.ilike.%{search}%,description.ilike.%{search}%")
 
     result = query.order("status", desc=True).order("created_at", desc=True).range(offset, offset + per_page - 1).execute()
 
@@ -206,7 +206,7 @@ def get_products_for_agent(
     if gender and gender != "ambos":
         query = query.in_("gender", [gender, "ambos"])
     if search:
-        query = query.text_search("search_vector", search, config="portuguese")
+        query = query.or_(f"name.ilike.%{search}%,description.ilike.%{search}%")
 
     result = query.limit(limit).execute()
     return result.data
