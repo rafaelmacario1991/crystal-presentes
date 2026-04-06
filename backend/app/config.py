@@ -45,7 +45,7 @@ NICHOS = [
     "Bonecas",
     "Cartelados",
     "Festividades",
-    "Puzzle",
+    "Praia 🏖️",
 ]
 
 FAIXAS_ETARIAS = [
